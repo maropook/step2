@@ -2,7 +2,7 @@ import random, sys, time
 
 ###########################################################################
 #                                                                         #
-# Implement a hash table from scratch! (⑅•ᴗ•⑅)                            #
+# Implement a hash table from scratch!                                    #
 #                                                                         #
 # Please do not use Python's dictionary or Python's collections library.  #
 # The goal is to implement the data structure yourself.                   #

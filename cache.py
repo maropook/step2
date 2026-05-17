@@ -1,14 +1,27 @@
 import sys
+import hash_table # Use the hash table you implemented in Homework #2
 
 # Implement a data structure that stores the most recently accessed N pages.
-# See the below test cases to see how it should work.
+# See the test cases to see how it should work.
 #
 # Note: Please do not use a library like collections.OrderedDict). The goal is
 #       to implement the data structure yourself!
 
+class Node:
+    def __init__(self, url, contents):
+        # URL
+        self.url = url
+        # The contents of the URL
+        self.contents = contents
+        # Previous Node
+        self.prev = None
+        # Next Node
+        self.next = None
+
+        
 class Cache:
     # Initialize the cache.
-    # |n|: The size of the cache.
+    # 'n': The size of the cache.
     def __init__(self, n):
         #------------------------#
         # Write your code here!  #
