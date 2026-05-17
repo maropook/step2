@@ -1,37 +1,45 @@
-import sys
-import hash_table # Use the hash table you implemented in Homework #2
+import random, sys
+import hash_table_expected # Use the hash table you implemented in Homework #2
 
-# Implement a data structure that stores the most recently accessed N pages.
-# See the test cases to see how it should work.
-#
-# Note: Please do not use a library like collections.OrderedDict). The goal is
-#       to implement the data structure yourself!
+###########################################################################
+#                                                                         #
+# Implement a cache that stores the most recently accessed items from     #
+# scratch!                                                                #
+#                                                                         #
+# Please do not use Python's dictionary or Python's collections library.  #
+# The goal is to implement the data structure yourself.                   #
+#                                                                         #
+###########################################################################
 
-class Node:
+class Page:
     def __init__(self, url, contents):
         # URL
         self.url = url
         # The contents of the URL
         self.contents = contents
-        # Previous Node
+        # Previous page
         self.prev = None
-        # Next Node
+        # Next page
         self.next = None
 
         
 class Cache:
     # Initialize the cache.
-    # 'n': The size of the cache.
-    def __init__(self, n):
+    # 'limit': The size limit of the cache.
+    def __init__(self, limit):
+        assert(limit >= 1)
+        self.limit = limit
+        self.hit_count = 0 # Increment on a cache hit
+        self.miss_count = 0 # Increment on a cache miss
         #------------------------#
         # Write your code here!  #
         #------------------------#
         pass
 
     # Access a page and update the cache so that it stores the most recently
-    # accessed N pages. This needs to be done with mostly O(1).
-    # |url|: The accessed URL
-    # |contents|: The contents of the URL
+    # accessed pages up to the 'limit'. This needs to be done with mostly O(1).
+    # 'url': The accessed URL
+    # 'contents': The contents of the URL
     def access_page(self, url, contents):
         #------------------------#
         # Write your code here!  #
@@ -47,6 +55,12 @@ class Cache:
         pass
 
 
+    # Return the cache hit rate.
+    def get_hitrate(self):
+        total = self.hit_count + self.miss_count
+        return self.hit_count / total if total > 0 else 0
+
+    
 def cache_test():
     # Set the size of the cache to 4.
     cache = Cache(4)
@@ -98,14 +112,14 @@ def cache_test():
 
     # Access "e.com".
     cache.access_page("e.com", "EEE")
-    # The cache is full, so we need to remove the least recently accessed page "b.com".
+    # The cache is full, so we remove the least recently accessed page "b.com".
     # The cache is updated to:
     #   (new)<-- "e.com", "a.com", "c.com", "d.com" -->(old)
     assert cache.get_pages() == ["e.com", "a.com", "c.com", "d.com"]
 
     # Access "f.com".
     cache.access_page("f.com", "FFF")
-    # The cache is full, so we need to remove the least recently accessed page "c.com".
+    # The cache is full, so we remove the least recently accessed page "c.com".
     # The cache is updated to:
     #   (new)<-- "f.com", "e.com", "a.com", "c.com" -->(old)
     assert cache.get_pages() == ["f.com", "e.com", "a.com", "c.com"]
@@ -125,5 +139,27 @@ def cache_test():
     print("Tests passed!")
 
 
+def performance_test():
+    # Set the size of the cache to 100.
+    cache = Cache(100)
+
+    # Generate queries based on the Zipf law.
+    ALPHA = 1.5
+    NUM_QUERIES = 1000000
+    NUM_PAGES = 1000
+    ranks = range(1, NUM_PAGES + 1)
+    weights = [1.0 / (r ** ALPHA) for r in ranks]
+    random.seed(1)
+    queries = random.choices(ranks, weights=weights, k=NUM_QUERIES)    
+    for query in queries:
+        cache.access_page(str(query), "")
+
+    # If your cache implementation is correct, the hit rate will be 91%.
+    print("Cache hit rate = %d %%" % (cache.get_hitrate() * 100))
+    print("Performance tests passed!")
+
+
 if __name__ == "__main__":
     cache_test()
+    performance_test()
+
