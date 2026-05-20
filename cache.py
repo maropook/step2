@@ -1,5 +1,5 @@
 import random, sys
-import hash_table_expected # Use the hash table you implemented in Homework #2
+import hash_table # Use the hash table you implemented in Homework #2
 
 ###########################################################################
 #                                                                         #
