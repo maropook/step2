@@ -1,7 +1,7 @@
 import sys
 
 """
-usage python3 task1_1.py <query>
+usage python3 task1.py <query>
 query should be string, len(string) > 0
 """
 WORDS_FILE = "../anagram/words.txt"
@@ -97,13 +97,6 @@ def read_words(word_file):
         for line in f:
             words.append(line.strip("\n"))
     return words
-
-
-def write_words(word_file):
-    with open(word_file) as f:
-        for line in f:
-            print(line, file=f)
-    return
 
 
 if __name__ == "__main__":

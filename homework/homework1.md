@@ -27,6 +27,9 @@ https://github.com/xharaken/step2/tree/master/anagram
 入力：small.txt, large.txt
 出力：各入力について「最大のスコアを持つ単語一つ」を列挙したファイル
 
+../anagram/score_checker.py ../anagram/small.txt task1_2_1_ans.txt
+
+
 
 ### テストケースについて
 まずは簡単なテストケースから考えよう
@@ -42,3 +45,4 @@ anagramが見つからない場合は？
 入力：small.txt, large.txt
 出力：各入力について「できるだけ大きいスコアになる複数の単語」を空白区切りで列挙したファイル
 例："rmoirhgaapocthpo" → "photographic roam"（"microphotograph" 一単語よりスコア合計が高い）
+→ 分割した単語だがmergeしたときにうまく行かなければならない

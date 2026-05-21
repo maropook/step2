@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(".."))
 from anagram.score_checker import calculate_score
 
 """
+方法2で実装
 usage python3 task1_2.py ../anagram/large.txt
 usage python3 task1_2.py ../anagram/small.txt
 """
@@ -24,6 +25,27 @@ WORDS_FILE = "../anagram/words.txt"
 ALPHABET_COUNT = 26
 
 
+def main(data_file, output_file):
+    dictionary = read_words(WORDS_FILE)
+    sorted_dictionary = sorted(
+        dictionary, key=lambda x: calculate_score(x), reverse=True
+    )
+    dictionary_alphabet_counts = create_dictionary_alphabet_count(sorted_dictionary)
+    queries = read_words(data_file)
+    ans = 0
+    anagrams = []
+    for query in queries:
+        new_anagram = get_new_anagram(
+            create_word_aphabet_count(query), dictionary_alphabet_counts
+        )
+        anagrams.append(new_anagram)
+        score = calculate_score(new_anagram)
+        ans += score
+        print(f"{query}: new_anagram:{new_anagram}, score:{score}")
+    write_words(anagrams, output_file)
+    print(ans)
+
+
 def create_word_aphabet_count(word):
     alphabet_counts = [0] * ALPHABET_COUNT
     for c in word:
@@ -39,24 +61,6 @@ def create_dictionary_alphabet_count(words):
             alphabet_counts[ord(c) - ord("a")] += 1
         alphabet_counts_dict[word] = alphabet_counts
     return alphabet_counts_dict
-
-
-def main(data_file):
-    dictionary = read_words(WORDS_FILE)
-    sorted_dictionary = sorted(
-        dictionary, key=lambda x: calculate_score(x), reverse=True
-    )
-    dictionary_alphabet_counts = create_dictionary_alphabet_count(sorted_dictionary)
-    queries = read_words(data_file)
-    ans = 0
-    for query in queries:
-        new_anagram = get_new_anagram(
-            create_word_aphabet_count(query), dictionary_alphabet_counts
-        )
-        score = calculate_score(new_anagram)
-        ans += score
-        print(f"{query}: new_anagram:{new_anagram}, score:{score}")
-    print(ans)
 
 
 def get_new_anagram(query, dictonary):
@@ -77,15 +81,15 @@ def read_words(word_file):
     return words
 
 
-def write_words(word_file):
-    with open(word_file) as f:
-        for line in f:
-            print(line, file=f)
+def write_words(words, word_file):
+    with open(word_file, "w") as f:
+        for word in words:
+            print(word, file=f)
     return
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("usage: %s query_file output_file" % sys.argv[0])
         exit(1)
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
