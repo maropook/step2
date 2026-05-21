@@ -46,3 +46,7 @@ anagramが見つからない場合は？
 出力：各入力について「できるだけ大きいスコアになる複数の単語」を空白区切りで列挙したファイル
 例："rmoirhgaapocthpo" → "photographic roam"（"microphotograph" 一単語よりスコア合計が高い）
 → 分割した単語だがmergeしたときにうまく行かなければならない
+
+query > word1 + word2
+queryが与えられたとき
+動的計画法使いそうな雰囲気があるなぁ
