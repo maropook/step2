@@ -3,10 +3,11 @@
 https://docs.google.com/presentation/d/16V4bfiWJeum9ocwKph1ua5zlsJ3lUZ1gwBDeaCMK9Mo/edit?slide=id.g23c41adceb3_0_0#slide=id.g23c41adceb3_0_0
 
 # Homework
-課題1:
-課題2:
-課題3:
-課題4:
+課題1:https://github.com/maropook/step2/blob/master/homework/task2_1.py
+課題2:https://github.com/maropook/step2/blob/master/homework/task2_2.md
+課題3:https://github.com/maropook/step2/blob/master/homework/task2_3.md
+課題4:https://github.com/maropook/step2/blob/master/homework/task2_4.py
+
 # Task1
 ほぼ O(1) で動くハッシュテーブルを自分で実装してみよう
 「Python の辞書に相当するものをゼロから自分で作る」宿題です
