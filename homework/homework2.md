@@ -4,9 +4,11 @@ https://docs.google.com/presentation/d/16V4bfiWJeum9ocwKph1ua5zlsJ3lUZ1gwBDeaCMK
 
 # Homework
 課題1:https://github.com/maropook/step2/blob/master/homework/task2_1.py
+課題1 ドキュメント: https://github.com/maropook/step2/blob/master/homework/task2_1_doc.md
 課題2:https://github.com/maropook/step2/blob/master/homework/task2_2.md
 課題3:https://github.com/maropook/step2/blob/master/homework/task2_3.md
 課題4:https://github.com/maropook/step2/blob/master/homework/task2_4.py
+課題4ドキュメント:https://github.com/maropook/step2/blob/master/homework/task2_4_doc.md
 
 # Task1
 ほぼ O(1) で動くハッシュテーブルを自分で実装してみよう
