@@ -49,13 +49,13 @@ def binary_search_word(query, dictionary):
 
     while left <= right:
         mid = (left + right) // 2
-        dict_word = dictionary[mid][0]
-        common_length = min(len(query), len(dict_word))
+        dictionary_word = dictionary[mid][0]
+        common_length = min(len(query), len(dictionary_word))
         for i in range(common_length):
-            if ord(dict_word[i]) > ord(query[i]):
+            if ord(dictionary_word[i]) > ord(query[i]):
                 right = mid - 1
                 break
-            elif ord(dict_word[i]) < ord(query[i]):
+            elif ord(dictionary_word[i]) < ord(query[i]):
                 left = mid + 1
                 break
             else:
@@ -63,9 +63,9 @@ def binary_search_word(query, dictionary):
                 is_last_common_loop = common_length == i + 1
                 # 共通した長さまでMAX一致した場合
                 if is_last_common_loop:
-                    if len(query) == len(dict_word):
+                    if len(query) == len(dictionary_word):
                         return mid
-                    elif len(query) > len(dict_word):
+                    elif len(query) > len(dictionary_word):
                         left = mid + 1
                     else:
                         right = mid - 1
