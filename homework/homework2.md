@@ -2,6 +2,11 @@
 # Week2 
 https://docs.google.com/presentation/d/16V4bfiWJeum9ocwKph1ua5zlsJ3lUZ1gwBDeaCMK9Mo/edit?slide=id.g23c41adceb3_0_0#slide=id.g23c41adceb3_0_0
 
+# Homework
+課題1:
+課題2:
+課題3:
+課題4:
 # Task1
 ほぼ O(1) で動くハッシュテーブルを自分で実装してみよう
 「Python の辞書に相当するものをゼロから自分で作る」宿題です
@@ -65,3 +70,54 @@ STEP の授業の価値 = みなさんがどれくらい考えたか
 サンプルコード cache.py
 Python の辞書もライブラリも一切使わずに解いてください（＝自分でゼロから高度なデータ構造を実装するのが目的です）
 宿題 1 で作った HashTable を使おう！
+
+
+## Task3 Memo
+
+globalにoldest_urlとnewest_urlを
+hash_tableのItemにolder_urlとnewer_urlをもたせる
+
+
+hashtableに入れるItemにolder, newerのkeyを入れておく
+globalにoldest, newestを持っておく
+targetのolderはあるがnewerは無いので
+
+tableにないばあい
+buckets内のnewestのolderをtargetにする, target.olderをnewestにしてnewest=target
+buckets内のoldestのnewerをoldestにする, oldestを削除
+
+tableにある場合
+newestの場合, 何も変更無し
+
+oldestの場合, tableにない場合と同じ挙動
+その他の場合 targetをnewestにする+前後を修正する必要がある。removeしてnewerに入れればいいだけ
+target.newer.older = target.older
+target.older.newer = target.newer
+newest.newerをtargetにする
+target.older = newest
+newestのnewerとnewestをtargetにする
+
+新しいものを入れた時size()がX以下の場合はoldest削除しなくてもいい
+
+====
+
+消す
+targetを消す
+oldestを消す
+
+要素数がすでにXの場合 or targetがすでにある場合削除
+newestを消す場合は無い
+oldestを消す→ oldestを削除 oldest = oldest.newer
+targetを消す→ target.newer.older = target.older, target.older.newer = target.newer
+(target消した時の前後関係を管理したり、oldestを記憶するためにolderもnewerも必要)
+
+入れる(size >= xならば削除したらいい)
+oldestの更新は必要ない
+newest.newer = target, target.older = newest,  newest = target
+
+動きをよく見ていたら、oldestを削除する、またはtargetを削除する+新しいものを追加する
+
+
+それ以外
+課題3 大きさXのhashmapを使用する。valueにはItemsを持ち、next, newer, olderを持つように
+globalとしてoldest, newestを持つようにする
