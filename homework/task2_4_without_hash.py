@@ -1,5 +1,4 @@
 import random, sys
-from task2_1 import HashTable
 
 ###########################################################################
 #                                                                         #
@@ -13,7 +12,7 @@ from task2_1 import HashTable
 
 
 class Page:
-    def __init__(self, url, contents):
+    def __init__(self, url, contents, next, older_url, newer_url):
         # URL
         self.url = url
         # The contents of the URL
@@ -21,7 +20,9 @@ class Page:
         # Previous page
         self.prev = None
         # Next page
-        self.next = None
+        self.next = next
+        self.older_url = older_url
+        self.newer_url = newer_url
 
 
 def calculate_hash(key):
@@ -40,10 +41,17 @@ class Cache:
         self.limit = limit
         self.hit_count = 0  # Increment on a cache hit
         self.miss_count = 0  # Increment on a cache miss
-
+        # ------------------------#
+        # Write your code here!  #
+        # ------------------------#
         self.oldest_url = None
         self.newest_url = None
-        self.hash_table = HashTable()
+        self.buckets = [None] * self.limit
+        self.item_count = 0
+        # ------------------------#
+        # Write your code here!  #
+        # ------------------------#
+
         pass
 
     # Access a page and update the cache so that it stores the most recently
@@ -53,78 +61,130 @@ class Cache:
     def access_page(self, url, contents):
         assert type(url) == str
 
+        # ------------------------#
+        # Write your code here!  #
+        # ------------------------#
         # 削除フェーズ
         # すでにキャッシュにあるならtargetを削除、ないかつsizeがlimitならoldestを削除
-        # すでにキャッシュにあるかつnewestであれば何も変化しない
         if self.newest_url == url:
             self.hit_count += 1
             return
 
         if self.remove_target_if_exist(url):
             self.hit_count += 1
+            self.item_count -= 1
         else:
             self.miss_count += 1
-            if self.hash_table.size() == self.limit:
+            # print(f"limit:{self.limit} item_count:{self.item_count}")
+            if self.item_count == self.limit:
                 self.remove_oldest()
+                self.item_count -= 1
 
         # 追加フェーズ
-        page = Page(url, contents)
-        page.prev = self.newest_url
-        self.hash_table.put(url, page)
+        index = calculate_hash(url) % self.limit
+        page = Page(url, contents, self.buckets[index], self.newest_url, None)
+        self.buckets[index] = page
+        self.item_count += 1
 
         if not self.oldest_url:
             self.oldest_url = url
         if self.newest_url:
-            prev_newest_page, _ = self.hash_table.get(self.newest_url)
-            prev_newest_page.next = url
-            self.hash_table.update(prev_newest_page.url, prev_newest_page)
+            second_newest_page = self.get_page(self.newest_url)
+            second_newest_page.newer_url = url
         self.newest_url = url
-        return
+
+        # ------------------------#
+        # Write your code here!  #
+        # ------------------------#
+        pass
 
     # Return the URLs stored in the cache. The URLs are ordered in the order
     # in which the URLs are mostly recently accessed.
     def get_pages(self):
+        # ------------------------#
+        # Write your code here!  #
+        # ------------------------#
+
         pages = []
         if not self.newest_url:
             return pages
-
-        current_page, _ = self.hash_table.get(self.newest_url)
+        current_page = self.get_page(self.newest_url)
         while current_page:
+            self.print_page(current_page)
             pages.append(current_page.url)
             if current_page.url == self.oldest_url:
+                # print(f"get_pages called oldest:url{self.oldest_url}, pages:{pages}")
                 return pages
-            current_page, _ = self.hash_table.get(current_page.prev)
+            current_page = self.get_page(current_page.older_url)
+        # print(f"get_pages called oldest:url{self.oldest_url}, pages:{pages}")
         return pages
 
-    def remove_oldest(self):
-        oldest_page, _ = self.hash_table.get(self.oldest_url)
-        self.oldest_url = oldest_page.next
-        self.hash_table.delete(oldest_page.url)
-        return
+    def remove_target(self, url):
+        index = calculate_hash(url) % self.limit
+        current_page = self.buckets[index]
+        if current_page.url == url:
+            self.buckets[index] = current_page.next
+            return
+
+        prev_item = current_page
+        current_page = current_page.next
+        while current_page:
+            if current_page.url == url:
+                prev_item.next = current_page.next
+                return True
+            prev_item = current_page
+            current_page = current_page.next
 
     def remove_target_if_exist(self, url):
-        target_page, _ = self.hash_table.get(url)
-        if not target_page:
-            return False
-
         if url == self.oldest_url:
             self.remove_oldest()
             return True
 
-        newer_page, _ = self.hash_table.get(target_page.next)
-        older_page, _ = self.hash_table.get(target_page.prev)
-        newer_page.prev = target_page.prev
-        older_page.next = target_page.next
-        self.hash_table.update(target_page.next, newer_page)
-        self.hash_table.update(target_page.prev, older_page)
-        self.hash_table.delete(url)
+        target_page = self.get_page(url)
+        if not target_page:
+            return False
 
+        self.update_relation(target_page.newer_url, None, target_page.older_url)
+        self.update_relation(target_page.older_url, target_page.newer_url, None)
+        self.remove_target(url)
         return True
+
+    def remove_oldest(self):
+        oldest_page = self.get_page(self.oldest_url)
+        self.oldest_url = oldest_page.newer_url
+        return
+
+    def get_page(self, url):
+        index = calculate_hash(url) % self.limit
+        current_page = self.buckets[index]
+        while current_page:
+            if current_page.url == url:
+                return current_page
+            current_page = current_page.next
+        return None
+
+    def update_relation(self, url, newer_url, older_url):
+        index = calculate_hash(url) % self.limit
+        current_page = self.buckets[index]
+        while current_page:
+            if current_page.url == url:
+                if newer_url:
+                    current_page.newer_url = newer_url
+                if older_url:
+                    current_page.older_url = older_url
+                return
+            current_page = current_page.next
+        return
 
     # Return the cache hit rate.
     def get_hitrate(self):
         total = self.hit_count + self.miss_count
         return self.hit_count / total if total > 0 else 0
+
+    def print_page(self, page):
+        return
+        print(f"url:{page.url} newer:{page.newer_url}, older:{page.older_url}")
+        print(f"oldest:{self.oldest_url} newest:{self.newest_url}")
 
 
 def cache_test():

@@ -19,13 +19,13 @@ def calculate_hash(key):
     # Note: This is not a good hash function. Make it better!
     hash = 0
     # for i in key:
-    #     hash += ord(i)　足すだけなら重み付けがなくて数字の順番が変わらない
+    #     hash += ord(i)  # 足すだけなら重み付けがなくて数字の順番が変わらない
     # hashのサイズを最大値としてまばらにindexが分布してほしい
     # for i, c in enumerate(key):
     #     hash += ord(c) * (i + 1) indexを重み付けにしてordをかけてみるが余り変わらない
     for i, c in enumerate(key):
         hash += ord(c) * (i**10)
-        # indexをもっと大きな重み付けにする keyは8桁の数字ほどであり0~100万まで表せる
+    # indexをもっと大きな重み付けにする keyは8桁の数字ほどであり0~100万まで表せる
     return hash
 
 
@@ -138,7 +138,7 @@ class HashTable:
         # ------------------------#
         # delete Getをするがprev = self.bucket[index], next = prev.next if prevがNoneならself.bucket[index] = found.next prev.next = prev.next.next
         check_size(self.size(), self.bucket_size)
-        
+
         index = calculate_hash(key) % self.bucket_size
         current_item = self.buckets[index]
         if not current_item:
