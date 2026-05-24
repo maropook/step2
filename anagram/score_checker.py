@@ -16,12 +16,13 @@ import sys
 # ----------------------------------------
 SCORES = [1, 3, 2, 2, 1, 3, 3, 1, 1, 4, 4, 2, 2, 1, 1, 3, 4, 1, 1, 1, 2, 3, 3, 4, 3, 4]
 
-WORDS_FILE = "words.txt"
+WORDS_FILE = "../anagram/words.txt"
+
 
 def calculate_score(word):
     score = 0
     for character in list(word):
-        score += SCORES[ord(character) - ord('a')]
+        score += SCORES[ord(character) - ord("a")]
     return score
 
 
@@ -29,7 +30,7 @@ def read_words(word_file):
     words = []
     with open(word_file) as f:
         for line in f:
-            words.append(line.rstrip('\n'))
+            words.append(line.rstrip("\n"))
     return words
 
 
@@ -37,18 +38,18 @@ def read_answers(answer_file):
     words = []
     with open(answer_file) as f:
         for line in f:
-            words.append(line.rstrip('\n').split(' '))
+            words.append(line.rstrip("\n").split(" "))
     return words
 
 
 def can_construct(answer, query):
     table = [0] * 26
     for character in query:
-        table[ord(character) - ord('a')] += 1
+        table[ord(character) - ord("a")] += 1
     for character in answer:
-        if (table[ord(character) - ord('a')] == 0):
+        if table[ord(character) - ord("a")] == 0:
             return False
-        table[ord(character) - ord('a')] -= 1
+        table[ord(character) - ord("a")] -= 1
     return True
 
 
@@ -56,28 +57,28 @@ def main(data_file, answer_file):
     valid_words = read_words(WORDS_FILE)
     query_words = read_words(data_file)
     answers = read_answers(answer_file)
-    
+
     if len(query_words) != len(answers):
-        print("The number of words in %s and %s doesn't match." %
-              (data_file, answer_file))
+        print(
+            "The number of words in %s and %s doesn't match." % (data_file, answer_file)
+        )
         exit(1)
-        
+
     score = 0
     for i in range(len(query_words)):
         if not can_construct("".join(answers[i]), query_words[i]):
-            print("'%s' is not an anagram of '%s'." %
-                  (answers[i], query_words[i]))
+            print("'%s' is not an anagram of '%s'." % (answers[i], query_words[i]))
             exit(1)
-            
+
         for answer in answers[i]:
             if answer not in valid_words:
                 print("'%s' is not a valid word!" % answer)
                 exit(1)
             score += calculate_score(answer)
-            
-    print('You answer is correct! Your score is %d.' % score)
 
-    
+    print("You answer is correct! Your score is %d." % score)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("usage: %s data_file your_answer_file" % sys.argv[0])
