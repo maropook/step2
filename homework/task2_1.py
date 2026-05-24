@@ -29,10 +29,6 @@ def calculate_hash(key):
     return hash
 
 
-def calculate_index(hash, bucket_size):
-    return hash % bucket_size
-
-
 # An item object that represents one key - value pair in the hash table.
 class Item:
     # 'key': The key of the item. The key must be a string.
@@ -142,6 +138,7 @@ class HashTable:
         # ------------------------#
         # delete Getをするがprev = self.bucket[index], next = prev.next if prevがNoneならself.bucket[index] = found.next prev.next = prev.next.next
         check_size(self.size(), self.bucket_size)
+        
         index = calculate_hash(key) % self.bucket_size
         current_item = self.buckets[index]
         if not current_item:
