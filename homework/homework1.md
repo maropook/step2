@@ -16,6 +16,21 @@ N:辞書の単語数, M:単語の長さ
 # 文字列listとして新の辞書を作成し N+logN
 
 #文字列1つをファイルに入れる、ちょうどその文字を使ってるやつ使う
+```
+def calculate_hash(key):
+    assert type(key) == str
+    # Note: This is not a good hash function. Make it better!
+    hash = 0
+    # for i in key:
+    #     hash += ord(i)  # 足すだけなら重み付けがなくて数字の順番が変わらない
+    # hashのサイズを最大値としてまばらにindexが分布してほしい
+    # for i, c in enumerate(key):
+    #     hash += ord(c) * (i + 1) indexを重み付けにしてordをかけてみるがあまり変わらない
+    for i, c in enumerate(key):
+        hash += ord(c) * (i**10)
+    # indexをもっと大きな重み付けにする keyは8桁の数字ほどであり0~100万まで表せる
+    return hash
+```
 
 #### 宿題2
 会えられた全部の文字使わなくてもいい　タモリ →森(辞書)

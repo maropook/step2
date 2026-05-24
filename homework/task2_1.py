@@ -16,16 +16,10 @@ import random, sys, time
 # Return value: a hash value
 def calculate_hash(key):
     assert type(key) == str
-    # Note: This is not a good hash function. Make it better!
     hash = 0
-    # for i in key:
-    #     hash += ord(i)  # 足すだけなら重み付けがなくて数字の順番が変わらない
-    # hashのサイズを最大値としてまばらにindexが分布してほしい
-    # for i, c in enumerate(key):
-    #     hash += ord(c) * (i + 1) indexを重み付けにしてordをかけてみるが余り変わらない
+    # iで重み付けする keyは8桁の数字ほどであるため0~100万まで表せるようにする
     for i, c in enumerate(key):
         hash += ord(c) * (i**10)
-    # indexをもっと大きな重み付けにする keyは8桁の数字ほどであり0~100万まで表せる
     return hash
 
 
@@ -58,10 +52,6 @@ class HashTable:
         self.bucket_size = 97
         self.buckets = [None] * self.bucket_size
         self.item_count = 0
-        # Get while current: 見つけたらreturn 見つからなかったらreturn (None, False)
-        # delete Getをするがprev = self.bucket[index], next = prev.next if prevがNoneならself.bucket[index] = found.next prev.next = prev.next.next
-        # if self.bucket[index] == targetだったら、 self.bucket[index] = self.bucket[index.next
-        # Put target.next = self.bucket[calculate_index], self.bucket@calculate_index] = targetとする
 
     # Put an item to the hash table. If the key already exists, the
     # corresponding value is updated to a new value.
@@ -69,27 +59,18 @@ class HashTable:
     # 'key': The key of the item.
     # 'value': The value of the item.
     # Return value: True if a new item is added. False if the key already exists
-    #               and the value is updated.
+    # and the value is updated.
     def put(self, key, value):
         assert type(key) == str
         check_size(self.size(), self.bucket_size)  # Don't remove this code.
         # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
         if self.update(key, value):
             return False
-        # Put target.next = self.bucket[calculate_index], self.bucket@calculate_index] = targetとする
-        hash_num = calculate_hash(key)
         index = calculate_hash(key) % self.bucket_size
         item = Item(key, value, self.buckets[index])
         self.buckets[index] = item
         self.item_count += 1
-        # print(
-        #     f"put hash:{hash_num} index:{index} items:{self.size()} key:{ self.buckets[index].key}  size:{self.bucket_size}"
-        # )
-        self.check_rehash_needed()
-        # ------------------------#
-        # End of my code         #
+        self.rehash_if_needed()
         # ------------------------#
         return True
 
@@ -112,17 +93,12 @@ class HashTable:
         assert type(key) == str
         check_size(self.size(), self.bucket_size)  # Don't remove this code.
         # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
-        # Get while current: 見つけたらreturn 見つからなかったらreturn (None, False)
         index = calculate_hash(key) % self.bucket_size
         current_item = self.buckets[index]
         while current_item:
             if current_item.key == key:
                 return (current_item.value, True)
             current_item = current_item.next
-        # ------------------------#
-        # End of my code         #
         # ------------------------#
         return (None, False)
 
@@ -134,20 +110,15 @@ class HashTable:
     def delete(self, key):
         assert type(key) == str
         # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
-        # delete Getをするがprev = self.bucket[index], next = prev.next if prevがNoneならself.bucket[index] = found.next prev.next = prev.next.next
-        check_size(self.size(), self.bucket_size)
-
         index = calculate_hash(key) % self.bucket_size
         current_item = self.buckets[index]
         if not current_item:
             return False
-        # bucketsの先頭が対象のKeyだった場合
+
         if current_item.key == key:
             self.buckets[index] = current_item.next
             self.item_count -= 1
-            self.check_rehash_needed()
+            self.rehash_if_needed()
             return True
 
         prev_item = current_item
@@ -156,12 +127,10 @@ class HashTable:
             if current_item.key == key:
                 prev_item.next = current_item.next
                 self.item_count -= 1
-                self.check_rehash_needed()
+                self.rehash_if_needed()
                 return True
             prev_item = current_item
             current_item = current_item.next
-        # ------------------------#
-        # End of my code         #
         # ------------------------#
         return False
 
@@ -169,12 +138,11 @@ class HashTable:
     def size(self):
         return self.item_count
 
-    def check_rehash_needed(self):
+    def rehash_if_needed(self):
         if self.size() >= int(self.bucket_size * 0.7):
             self.rehash(self.bucket_size * 2 + 1)
         elif self.size() <= int(self.bucket_size * 0.3):
             new_size = self.bucket_size // 2
-            # print(f"new_size: {new_size}")
             if new_size <= 96:
                 return
             if new_size == 0:
@@ -184,9 +152,7 @@ class HashTable:
         return
 
     def rehash(self, size):
-        print("rehash is called")
         prev_buckets = self.buckets
-
         self.item_count = 0
         self.bucket_size = size
         self.buckets = [None] * self.bucket_size
@@ -214,7 +180,6 @@ class HashTable:
 #
 # Note: Don't change this function.
 def check_size(item_count, bucket_size):
-    # print(f"{item_count} {bucket_size}")
     assert bucket_size < 100 or item_count >= bucket_size * 0.3
 
 
