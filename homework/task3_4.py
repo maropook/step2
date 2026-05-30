@@ -5,6 +5,11 @@ PLUS_TOKEN = "PLUS"
 MINUS_TOKEN = "MINUS"
 MULT_TOKEN = "MULT"
 DIV_TOKEN = "DIV"
+
+ABS_TOKEN = "ABS"
+INT_TOKEN = "INT"
+ROUND_TOKEN = "ROUND"
+
 LEFT_TOKEN = "LEFT"
 RIGHT_TOKEN = "RIGHT"
 
@@ -55,6 +60,21 @@ def read_left_parensis(line, index):
     return token, index + 1
 
 
+def read_abs(line, index):
+    token = {"type": ABS_TOKEN}
+    return token, index + 3
+
+
+def read_int(line, index):
+    token = {"type": INT_TOKEN}
+    return token, index + 3
+
+
+def read_round(line, index):
+    token = {"type": ROUND_TOKEN}
+    return token, index + 5
+
+
 def tokenize(line):
     tokens = []
     index = 0
@@ -73,6 +93,12 @@ def tokenize(line):
             token, index = read_right_parensis(line, index)
         elif line[index] == "(":
             token, index = read_left_parensis(line, index)
+        elif line[index] == "a" and line[index : index + 3] == "abs":
+            token, index = read_abs(line, index)
+        elif line[index] == "i" and line[index : index + 3] == "int":
+            token, index = read_int(line, index)
+        elif line[index] == "r" and line[index : index + 5] == "round":
+            token, index = read_round(line, index)
         else:
             print("Invalid character found: " + line[index])
             exit(1)
@@ -83,11 +109,14 @@ def tokenize(line):
 def evaluate(tokens):
     tokens = resolve_parenthes(tokens)
     print(f"( and ) were resolved: {tokens}")
+    tokens = resolve_math_functions(tokens)
+    print(f"abs, int, round were resolved: {tokens}")
     tokens = resolve_multi_div(tokens)
     print(f"+ and / were resolved: {tokens}")
     tokens = resolve_plus_minus(tokens)
     print(f"+ and - were resolved: {tokens}")
     return tokens[0]["number"]
+
 
 # かっこ内部を計算し、かっこを含まないtokenを返す
 def resolve_parenthes(tokens):
@@ -115,38 +144,37 @@ def resolve_parenthes(tokens):
 
 
 def resolve_parensis(tokens, left_parenthesis, right_parenthesis):
-    tokens = resolve_multi_div(tokens[left_parenthesis + 1 : right_parenthesis])
+    tokens = resolve_math_functions(tokens[left_parenthesis + 1 : right_parenthesis])
+    tokens = resolve_multi_div(tokens)
     tokens = resolve_plus_minus(tokens)
     return tokens[0]["number"]
 
 
-# +と-をを計算し、計算式を含まないtokenを返す
-def resolve_plus_minus(tokens):
+# abs, int, roundを計算し、それらを含まないtokenを返す
+def resolve_math_functions(tokens):
     index = 1
     while 0 < index < len(tokens):
         operator = tokens[index - 1]["type"]
         if tokens[index]["type"] == "NUMBER" and (
-            operator == PLUS_TOKEN or operator == MINUS_TOKEN
+            operator == ABS_TOKEN or operator == INT_TOKEN or operator == ROUND_TOKEN
         ):
-            first_number = tokens[index - 2]["number"]
-            second_number = tokens[index]["number"]
-            if operator == PLUS_TOKEN:
-                tokens[index - 2]["number"] = first_number + second_number
-            elif operator == MINUS_TOKEN:
-                tokens[index - 2]["number"] = first_number - second_number
-            else:
-                print("Invalid syntax")
-                exit(1)
-            tokens.pop(index)
+            number = tokens[index]["number"]
+            if operator == ABS_TOKEN:
+                tokens[index]["number"] = abs(number)
+            elif operator == INT_TOKEN:
+                tokens[index]["number"] = int(number)
+            elif operator == ROUND_TOKEN:
+                tokens[index]["number"] = round(number)
             tokens.pop(index - 1)
-            index -= 2
+            index -= 1
         index += 1
     return tokens
 
-# *と/をを計算し、*と/を含まないtokenを返す
+
+# *と/を計算し、それらを含まないtokenを返す
 def resolve_multi_div(tokens):
     index = 1
-    while 0 < index < len(tokens):
+    while index < len(tokens):
         operator = tokens[index - 1]["type"]
         if tokens[index]["type"] == "NUMBER" and (
             operator == MULT_TOKEN or operator == DIV_TOKEN
@@ -158,9 +186,27 @@ def resolve_multi_div(tokens):
                 tokens[index - 2]["number"] = first_number * second_number
             elif operator == DIV_TOKEN:
                 tokens[index - 2]["number"] = first_number / second_number
-            else:
-                print("Invalid syntax")
-                exit(1)
+            tokens.pop(index)
+            tokens.pop(index - 1)
+            index -= 2
+        index += 1
+    return tokens
+
+
+# +と-を計算し、それらを含まないtokenを返す
+def resolve_plus_minus(tokens):
+    index = 1
+    while index < len(tokens):
+        operator = tokens[index - 1]["type"]
+        if tokens[index]["type"] == "NUMBER" and (
+            operator == PLUS_TOKEN or operator == MINUS_TOKEN
+        ):
+            first_number = tokens[index - 2]["number"]
+            second_number = tokens[index]["number"]
+            if operator == PLUS_TOKEN:
+                tokens[index - 2]["number"] = first_number + second_number
+            elif operator == MINUS_TOKEN:
+                tokens[index - 2]["number"] = first_number - second_number
             tokens.pop(index)
             tokens.pop(index - 1)
             index -= 2
@@ -213,6 +259,11 @@ def run_test():
     test("3/(4*2+4)/2")
     test("3*(2+3*(4+3))")
 
+    test("abs(1-4)")
+    test("int(1.2)")
+    test("round(3.3)")
+    test("12+abs(int(round(1.55)+abs(int(2.3+4))))")
+
     print("==== Test finished! ====\n")
 
 
@@ -224,21 +275,3 @@ run_test()
 #     tokens = tokenize(line)
 #     answer = evaluate(tokens)
 #     print("answer = %f\n" % answer)
-
-
-# def evaluate_plus_minus(tokens):
-#     answer = 0
-#     index = 1
-#     while index < len(tokens):
-#         if tokens[index]["type"] == "NUMBER":
-#             operator = tokens[index - 1]["type"]
-#             num = tokens[index]["number"]
-#             if operator == PLUS_TOKEN:
-#                 answer += num
-#             elif operator == MINUS_TOKEN:
-#                 answer -= num
-#             else:
-#                 print("Invalid syntax")
-#                 exit(1)
-#         index += 1
-#     return answer
