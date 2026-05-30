@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+import traceback
 
 
 def read_number(line, index):
@@ -93,16 +94,21 @@ def evaluate(tokens):
 def resolve_parenthes(tokens):
     left_parenthes = []
     index = 0
-    # right_parenthesが見つかったらそのカッコの部分をresolveしてtokenを減らす
-
+    # right_parenthesが見つかったらペアとなるleft_parenthesまでを計算してparenthesを削除することを繰り返す
     while index < len(tokens):
         operator = tokens[index]["type"]
         if operator == LEFT_TOKEN:
             left_parenthes.append(index)
         elif operator == RIGHT_TOKEN:
             left_parenthsis = left_parenthes.pop()
-            resolved_tokens = resolve_parensis(tokens, left_parenthsis, index)
-            tokens = tokens[:left_parenthsis] + resolved_tokens + tokens[index + 1 :]
+
+            resolved_number = resolve_parensis(tokens, left_parenthsis, index)
+            for _ in range(index - left_parenthsis + 1):
+                tokens.pop(left_parenthsis)
+            tokens.insert(
+                left_parenthsis, {"type": "NUMBER", "number": resolved_number}
+            )
+            # tokens = tokens[:left_parenthsis] + resolved_tokens + tokens[index + 1 :] としてtokenを置き換えることも可能
             index = left_parenthsis - 1
         index += 1
     return tokens
@@ -111,7 +117,7 @@ def resolve_parenthes(tokens):
 def resolve_parensis(tokens, left_parenthesis, right_parenthesis):
     tokens = resolve_multi_div(tokens[left_parenthesis + 1 : right_parenthesis])
     tokens = resolve_plus_minus(tokens)
-    return tokens
+    return tokens[0]["number"]
 
 
 def resolve_plus_minus(tokens):
@@ -172,6 +178,10 @@ def test(line):
             "FAIL! (%s should be %f but was %f)"
             % (line, expected_answer, actual_answer)
         )
+        try:
+            raise Exception
+        except:
+            traceback.print_exc()
 
 
 def run_test():
@@ -207,12 +217,12 @@ def run_test():
 
 run_test()
 
-while True:
-    print("> ", end="")
-    line = input()
-    tokens = tokenize(line)
-    answer = evaluate(tokens)
-    print("answer = %f\n" % answer)
+# while True:
+#     print("> ", end="")
+#     line = input()
+#     tokens = tokenize(line)
+#     answer = evaluate(tokens)
+#     print("answer = %f\n" % answer)
 
 
 # def evaluate_plus_minus(tokens):
