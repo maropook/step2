@@ -1,7 +1,3 @@
-"""
-2 4 6 7 8
-
-"""
 def quick_sort(array, left, right):
     pivot = array[int((left + right) / 2)]
     i = left
@@ -23,23 +19,25 @@ def quick_sort(array, left, right):
     if right > j + 1:
         quick_sort(array, j + 1, right)
 
+
 def sort(array):
     quick_sort(array, 0, len(array) - 1)
+
 
 def binary_search(array, target):
     left = 0
     right = len(array) - 1
-    while left <= right:
+    while left < right:
         middle = int((left + right) / 2)
-        print(left, right, middle) # 0 1 0
         if array[middle] == target:
             return True
         if target < array[middle]:
-            right = middle - 1
+            right = middle
         else:
-            left = middle + 1
+            left = middle
     return False
 
+# 2 3 → 
 
 # Read input data
 print("Array: ", end="")
@@ -48,8 +46,8 @@ array = list(map(int, input().split()))
 # Sort the array
 sort(array)
 # print(array)
-for i in range(len(array)-1):
-    assert array[i] <= array[i+1]
+for i in range(len(array) - 1):
+    assert array[i] <= array[i + 1]
 
 
 while True:

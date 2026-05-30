@@ -10,7 +10,10 @@ https://docs.google.com/presentation/d/16V4bfiWJeum9ocwKph1ua5zlsJ3lUZ1gwBDeaCMK
 ・再hashするタイミングでレイテンシが高くなる
 ・検索を行う際に木構造であれば近くのものを持ってくるだけでよい
 ・バランス木に調整するほうが再hash化より負荷が小さい
-・hash関数の設計が難しい(現実のサービスではhash値の衝突が起こりやすい)
+・hash関数の設計が難しい(現実のサービスではhash値の衝突が起こりやすい, Kの予測が難しい)
+
+・logNは意外と大きくない(1億でも24N)
+・
 
 
 
