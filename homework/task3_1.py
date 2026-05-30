@@ -65,30 +65,52 @@ def tokenize(line):
 
 
 def evaluate(tokens):
-    answer = 0
     tokens.insert(0, {"type": PLUS_TOKEN})
+    tokens = calculate_multi_div(tokens)
+    print(tokens)
+    answer = evaluate_plus_minus(tokens)
+    return answer
+
+
+def evaluate_plus_minus(tokens):
+    answer = 0
     index = 1
     while index < len(tokens):
         if tokens[index]["type"] == "NUMBER":
             operator = tokens[index - 1]["type"]
             num = tokens[index]["number"]
-
             if operator == PLUS_TOKEN:
                 answer += num
             elif operator == MINUS_TOKEN:
                 answer -= num
-            elif operator == MULT_TOKEN:
-                answer *= num
-            elif operator == DIV_TOKEN:
-                if num == 0.0 or num == 0:
-                    answer = -float("inf")
-                else:
-                    answer /= num
             else:
                 print("Invalid syntax")
                 exit(1)
         index += 1
     return answer
+
+
+def calculate_multi_div(tokens):
+    index = 0
+    while index < len(tokens):
+        operator = tokens[index - 1]["type"]
+        if tokens[index]["type"] == "NUMBER" and (
+            operator == MULT_TOKEN or operator == DIV_TOKEN
+        ):
+            first_number = tokens[index - 2]["number"]
+            second_number = tokens[index]["number"]
+
+            if operator == MULT_TOKEN:
+                tokens[index - 2]["number"] = first_number * second_number
+            elif operator == DIV_TOKEN:
+                tokens[index - 2]["number"] = first_number / second_number
+            else:
+                print("Invalid syntax")
+                exit(1)
+            tokens.pop(index - 1)
+            tokens.pop(index - 1)
+        index += 1
+    return tokens
 
 
 def test(line):
@@ -114,8 +136,11 @@ def run_test():
     test("1.000-3.99999")
     test("1-2+3-5")
 
-    # test("1-2+3-5*0")
-    # test("1-2+3-5/0")
+    test("1-2+3-5*0")
+    test("15-2+3-5/5")
+    test("5/5")
+    test("2*3")
+    test("3*2")
 
     print("==== Test finished! ====\n")
 
