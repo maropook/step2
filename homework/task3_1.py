@@ -21,6 +21,8 @@ PLUS_TOKEN = "PLUS"
 MINUS_TOKEN = "MINUS"
 MULT_TOKEN = "MULT"
 DIV_TOKEN = "DIV"
+LEFT_TOKEN = "LEFT"
+RIGHT_TOKEN = "RIGHT"
 
 
 def read_plus(line, index):
@@ -43,6 +45,16 @@ def read_division(line, index):
     return token, index + 1
 
 
+def read_right_parensis(line, index):
+    token = {"type": RIGHT_TOKEN}
+    return token, index + 1
+
+
+def read_left_parensis(line, index):
+    token = {"type": LEFT_TOKEN}
+    return token, index + 1
+
+
 def tokenize(line):
     tokens = []
     index = 0
@@ -57,6 +69,10 @@ def tokenize(line):
             token, index = read_multiplication(line, index)
         elif line[index] == "/":
             token, index = read_division(line, index)
+        elif line[index] == ")":
+            token, index = read_right_parensis(line, index)
+        elif line[index] == "(":
+            token, index = read_left_parensis(line, index)
         else:
             print("Invalid character found: " + line[index])
             exit(1)
@@ -65,34 +81,65 @@ def tokenize(line):
 
 
 def evaluate(tokens):
-    tokens.insert(0, {"type": PLUS_TOKEN})
-    tokens = calculate_multi_div(tokens)
-    print(tokens)
-    answer = evaluate_plus_minus(tokens)
-    return answer
+    tokens = resolve_parenthes(tokens)
+    print(f"( and ) were resolved: {tokens}")
+    tokens = resolve_multi_div(tokens)
+    print(f"+ and / were resolved: {tokens}")
+    tokens = resolve_plus_minus(tokens)
+    print(f"+ and - were resolved: {tokens}")
+    return tokens[0]["number"]
 
 
-def evaluate_plus_minus(tokens):
-    answer = 0
-    index = 1
+def resolve_parenthes(tokens):
+    left_parenthes = []
+    index = 0
+    # right_parenthesが見つかったらそのカッコの部分をresolveしてtokenを減らす
+
     while index < len(tokens):
-        if tokens[index]["type"] == "NUMBER":
-            operator = tokens[index - 1]["type"]
-            num = tokens[index]["number"]
+        operator = tokens[index]["type"]
+        if operator == LEFT_TOKEN:
+            left_parenthes.append(index)
+        elif operator == RIGHT_TOKEN:
+            left_parenthsis = left_parenthes.pop()
+            resolved_tokens = resolve_parensis(tokens, left_parenthsis, index)
+            tokens = tokens[:left_parenthsis] + resolved_tokens + tokens[index + 1 :]
+            index = left_parenthsis - 1
+        index += 1
+    return tokens
+
+
+def resolve_parensis(tokens, left_parenthesis, right_parenthesis):
+    tokens = resolve_multi_div(tokens[left_parenthesis + 1 : right_parenthesis])
+    tokens = resolve_plus_minus(tokens)
+    return tokens
+
+
+def resolve_plus_minus(tokens):
+    index = 1
+    while 0 < index < len(tokens):
+        operator = tokens[index - 1]["type"]
+        if tokens[index]["type"] == "NUMBER" and (
+            operator == PLUS_TOKEN or operator == MINUS_TOKEN
+        ):
+            first_number = tokens[index - 2]["number"]
+            second_number = tokens[index]["number"]
             if operator == PLUS_TOKEN:
-                answer += num
+                tokens[index - 2]["number"] = first_number + second_number
             elif operator == MINUS_TOKEN:
-                answer -= num
+                tokens[index - 2]["number"] = first_number - second_number
             else:
                 print("Invalid syntax")
                 exit(1)
+            tokens.pop(index)
+            tokens.pop(index - 1)
+            index -= 2
         index += 1
-    return answer
+    return tokens
 
 
-def calculate_multi_div(tokens):
-    index = 0
-    while index < len(tokens):
+def resolve_multi_div(tokens):
+    index = 1
+    while 0 < index < len(tokens):
         operator = tokens[index - 1]["type"]
         if tokens[index]["type"] == "NUMBER" and (
             operator == MULT_TOKEN or operator == DIV_TOKEN
@@ -107,8 +154,9 @@ def calculate_multi_div(tokens):
             else:
                 print("Invalid syntax")
                 exit(1)
+            tokens.pop(index)
             tokens.pop(index - 1)
-            tokens.pop(index - 1)
+            index -= 2
         index += 1
     return tokens
 
@@ -129,6 +177,7 @@ def test(line):
 def run_test():
     print("==== Test started! ====")
     test("1+2")
+    test("1+2+3")
     test("1.0+2.1-3")
 
     test("11111111+11111111")
@@ -141,6 +190,17 @@ def run_test():
     test("5/5")
     test("2*3")
     test("3*2")
+    test("3.0+4*2-1/5")
+
+    test("(1)")
+    test("(1-2)*2")
+    test("(1+2+4)*2")
+    test("(2)/((1+2+4)*2)+5")
+
+    test("(1)+(2)+(3)")
+    test("(1-2)*2")
+    test("3/(4*2+4)/2")
+    test("3*(2+3*(4+3))")
 
     print("==== Test finished! ====\n")
 
@@ -153,3 +213,21 @@ while True:
     tokens = tokenize(line)
     answer = evaluate(tokens)
     print("answer = %f\n" % answer)
+
+
+# def evaluate_plus_minus(tokens):
+#     answer = 0
+#     index = 1
+#     while index < len(tokens):
+#         if tokens[index]["type"] == "NUMBER":
+#             operator = tokens[index - 1]["type"]
+#             num = tokens[index]["number"]
+#             if operator == PLUS_TOKEN:
+#                 answer += num
+#             elif operator == MINUS_TOKEN:
+#                 answer -= num
+#             else:
+#                 print("Invalid syntax")
+#                 exit(1)
+#         index += 1
+#     return answer
