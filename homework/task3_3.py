@@ -89,6 +89,7 @@ def evaluate(tokens):
     print(f"+ and - were resolved: {tokens}")
     return tokens[0]["number"]
 
+
 # かっこ内部を計算し、かっこを含まないtokenを返す
 def resolve_parenthes(tokens):
     left_parenthes = []
@@ -120,7 +121,7 @@ def resolve_parensis(tokens, left_parenthesis, right_parenthesis):
     return tokens[0]["number"]
 
 
-# +と-をを計算し、計算式を含まないtokenを返す
+# +と-を計算し、計算式を含まないtokenを返す
 def resolve_plus_minus(tokens):
     index = 1
     while 0 < index < len(tokens):
@@ -143,7 +144,8 @@ def resolve_plus_minus(tokens):
         index += 1
     return tokens
 
-# *と/をを計算し、*と/を含まないtokenを返す
+
+# *と/を計算し、*と/を含まないtokenを返す
 def resolve_multi_div(tokens):
     index = 1
     while 0 < index < len(tokens):

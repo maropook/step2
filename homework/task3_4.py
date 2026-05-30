@@ -1,17 +1,17 @@
 #! /usr/bin/python3
 import traceback
 
-PLUS_TOKEN_KEY = "PLUS"
-MINUS_TOKEN_KEY = "MINUS"
-MULT_TOKEN_KEY = "MULT"
-DIV_TOKEN_KEY = "DIV"
+PLUS = "PLUS"
+MINUS = "MINUS"
+MULT = "MULT"
+DIV = "DIV"
 
-ABS_TOKEN_KEY = "ABS"
-INT_TOKEN_KEY = "INT"
-ROUND_TOKEN_KEY = "ROUND"
+ABS = "ABS"
+INT = "INT"
+ROUND = "ROUND"
 
-LEFT_TOKEN_KEY = "LEFT"
-RIGHT_TOKEN_KEY = "RIGHT"
+LEFT_PARENSIS = "LEFT_PARENSIS"
+RIGHT_PARENSIS = "RIGHT_PARENSIS"
 
 
 def read_number(line, index):
@@ -31,47 +31,47 @@ def read_number(line, index):
 
 
 def read_plus(line, index):
-    token = {"type": PLUS_TOKEN_KEY}
+    token = {"type": PLUS}
     return token, index + 1
 
 
 def read_minus(line, index):
-    token = {"type": MINUS_TOKEN_KEY}
+    token = {"type": MINUS}
     return token, index + 1
 
 
 def read_multiplication(line, index):
-    token = {"type": MULT_TOKEN_KEY}
+    token = {"type": MULT}
     return token, index + 1
 
 
 def read_division(line, index):
-    token = {"type": DIV_TOKEN_KEY}
+    token = {"type": DIV}
     return token, index + 1
 
 
 def read_right_parensis(line, index):
-    token = {"type": RIGHT_TOKEN_KEY}
+    token = {"type": RIGHT_PARENSIS}
     return token, index + 1
 
 
 def read_left_parensis(line, index):
-    token = {"type": LEFT_TOKEN_KEY}
+    token = {"type": LEFT_PARENSIS}
     return token, index + 1
 
 
 def read_abs(line, index):
-    token = {"type": ABS_TOKEN_KEY}
+    token = {"type": ABS}
     return token, index + 3
 
 
 def read_int(line, index):
-    token = {"type": INT_TOKEN_KEY}
+    token = {"type": INT}
     return token, index + 3
 
 
 def read_round(line, index):
-    token = {"type": ROUND_TOKEN_KEY}
+    token = {"type": ROUND}
     return token, index + 5
 
 
@@ -125,9 +125,9 @@ def resolve_parenthes(tokens):
     index = 0
     while index < len(tokens):
         operator = tokens[index]["type"]
-        if operator == LEFT_TOKEN_KEY:
+        if operator == LEFT_PARENSIS:
             left_parenthes.append(index)
-        elif operator == RIGHT_TOKEN_KEY:
+        elif operator == RIGHT_PARENSIS:
             # 閉じかっこが見つかった、前の開かっこから今の閉じかっこまでを計算してtokenを更新、開かっこと閉じかっこを消して新しい値で上書きする
             left_parenthsis = left_parenthes.pop()
             # tokens = tokens[:left_parenthsis] + resolved_tokens + tokens[index + 1 :] としてtokenを置き換えることも可能
@@ -156,16 +156,14 @@ def resolve_math_functions(tokens):
     while 0 < index < len(tokens):
         operator = tokens[index - 1]["type"]
         if tokens[index]["type"] == "NUMBER" and (
-            operator == ABS_TOKEN_KEY
-            or operator == INT_TOKEN_KEY
-            or operator == ROUND_TOKEN_KEY
+            operator == ABS or operator == INT or operator == ROUND
         ):
             number = tokens[index]["number"]
-            if operator == ABS_TOKEN_KEY:
+            if operator == ABS:
                 tokens[index]["number"] = abs(number)
-            elif operator == INT_TOKEN_KEY:
+            elif operator == INT:
                 tokens[index]["number"] = int(number)
-            elif operator == ROUND_TOKEN_KEY:
+            elif operator == ROUND:
                 tokens[index]["number"] = round(number)
             tokens.pop(index - 1)
             index -= 1
@@ -178,15 +176,13 @@ def resolve_multi_div(tokens):
     index = 1
     while 0 < index < len(tokens):
         operator = tokens[index - 1]["type"]
-        if tokens[index]["type"] == "NUMBER" and (
-            operator == MULT_TOKEN_KEY or operator == DIV_TOKEN_KEY
-        ):
+        if tokens[index]["type"] == "NUMBER" and (operator == MULT or operator == DIV):
             first_number = tokens[index - 2]["number"]
             second_number = tokens[index]["number"]
 
-            if operator == MULT_TOKEN_KEY:
+            if operator == MULT:
                 tokens[index - 2]["number"] = first_number * second_number
-            elif operator == DIV_TOKEN_KEY:
+            elif operator == DIV:
                 tokens[index - 2]["number"] = first_number / second_number
             tokens.pop(index)
             tokens.pop(index - 1)
@@ -201,13 +197,13 @@ def resolve_plus_minus(tokens):
     while 0 < index < len(tokens):
         operator = tokens[index - 1]["type"]
         if tokens[index]["type"] == "NUMBER" and (
-            operator == PLUS_TOKEN_KEY or operator == MINUS_TOKEN_KEY
+            operator == PLUS or operator == MINUS
         ):
             first_number = tokens[index - 2]["number"]
             second_number = tokens[index]["number"]
-            if operator == PLUS_TOKEN_KEY:
+            if operator == PLUS:
                 tokens[index - 2]["number"] = first_number + second_number
-            elif operator == MINUS_TOKEN_KEY:
+            elif operator == MINUS:
                 tokens[index - 2]["number"] = first_number - second_number
             tokens.pop(index)
             tokens.pop(index - 1)
@@ -239,10 +235,10 @@ def run_test():
     test("1.0+2")
     test("1.0+2.0")
     test("1+2+3")
-    test("1.0+2.1-3")
     test("1.0000+1.00003")
 
     test("11111111+11111111")
+    test("1.0+2.1-3")
     test("11111111-11111111")
     test("1.000-3.99999")
     test("1-2+3-5")

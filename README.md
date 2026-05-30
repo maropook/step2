@@ -1,4 +1,2 @@
-## GOOGLE STEP 2026!!
+## HOW TO START
 source myenv/bin/activate.fish
-
-## task1
