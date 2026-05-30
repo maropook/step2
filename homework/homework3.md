@@ -2,6 +2,7 @@ https://docs.google.com/presentation/d/1DmNxvyvSj_S9AByuMaFzPha7BDwpyjzJw6QElIqL
 ### Homework
 課題1~3: https://github.com/maropook/step2/blob/master/homework/task3_3.py
 課題4: https://github.com/maropook/step2/blob/master/homework/task3_4.py
+ドキュメント: https://github.com/maropook/step2/blob/master/homework/task3_4.md
 
 聞きたいこと: 
 ・テストケースが微妙、どこまで細かくやらないといけないのかと圧倒されている
