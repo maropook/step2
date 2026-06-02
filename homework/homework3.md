@@ -1,4 +1,5 @@
 https://docs.google.com/presentation/d/1DmNxvyvSj_S9AByuMaFzPha7BDwpyjzJw6QElIqLMfY/edit?slide=id.g2375ad78a42_1_450#slide=id.g2375ad78a42_1_450
+
 ### Homework
 課題1~3: https://github.com/maropook/step2/blob/master/homework/task3_3.py
 課題4: https://github.com/maropook/step2/blob/master/homework/task3_4.py
