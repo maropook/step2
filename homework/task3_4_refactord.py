@@ -24,7 +24,38 @@ R_PAREN = "R_PAREN"
 # Errorが正しく起きるかもテストする TestError作ってエラーのTry catch catchの文面が一緒か
 #
 
+operators = {
+    "+": {"length": 1, "token": "+", "type": PLUS},
+    "-": {"length": 1, "token": "-", "type": MINUS},
+    "*": {"length": 1, "token": "*", "type": MULT},
+    "/": {"length": 1, "token": "/", "type": DIV},
+    "(": {"length": 1, "token": "(", "type": L_PAREN},
+    ")": {"length": 1, "token": ")", "type": R_PAREN},
+    "a": {"length": 3, "token": "abs", "type": ABS},
+    "i": {"length": 3, "token": "int", "type": INT},
+    "r": {"length": 5, "token": "round", "type": ROUND},
+}
 
+
+# 文字列を読み取りtokensを返す
+def tokenize(line):
+    tokens = []
+    index = 0
+    while index < len(line):
+        if line[index].isdigit():
+            token, index = read_number(line, index)
+        elif line[index] in operators:
+            op = operators[line[index]]
+            if line[index : index + op["length"]] == op["token"]:
+                token, index = {"type": op["type"]}, index + op["length"]
+        else:
+            print("Invalid character found: " + line[index])
+            exit(1)
+        tokens.append(token)
+    return tokens
+
+
+# 文字列の数字を受け取りtokenと新たなindexを返す
 def read_number(line, index):
     number = 0
     while index < len(line) and line[index].isdigit():
@@ -41,91 +72,26 @@ def read_number(line, index):
     return token, index
 
 
-def read_plus(line, index):
-    token = {"type": PLUS}
-    return token, index + 1
+# 文字列の演算子を受け取りtokenと新たなindexを返す
+def read_operator(line, index):
+    op = operator[line[index]]
+    if line[index : index + op["length"]] == op["token"]:
+        return {"type": op["type"]}, index + op["length"]
+    else:
+        print("Invalid character found: " + line[index])
+        exit(1)
 
 
-def read_minus(line, index):
-    token = {"type": MINUS}
-    return token, index + 1
-
-
-def read_multiplication(line, index):
-    token = {"type": MULT}
-    return token, index + 1
-
-
-def read_division(line, index):
-    token = {"type": DIV}
-    return token, index + 1
-
-
-def read_right_parensis(line, index):
-    token = {"type": R_PAREN}
-    return token, index + 1
-
-
-def read_left_parensis(line, index):
-    token = {"type": L_PAREN}
-    return token, index + 1
-
-
-def read_abs(line, index):
-    token = {"type": ABS}
-    return token, index + 3
-
-
-def read_int(line, index):
-    token = {"type": INT}
-    return token, index + 3
-
-
-def read_round(line, index):
-    token = {"type": ROUND}
-    return token, index + 5
-
-
-def tokenize(line):
-    tokens = []
-    index = 0
-    while index < len(line):
-        if line[index].isdigit():
-            token, index = read_number(line, index)
-        elif line[index] == "+":
-            token, index = read_plus(line, index)
-        elif line[index] == "-":
-            token, index = read_minus(line, index)
-        elif line[index] == "*":
-            token, index = read_multiplication(line, index)
-        elif line[index] == "/":
-            token, index = read_division(line, index)
-        elif line[index] == ")":
-            token, index = read_right_parensis(line, index)
-        elif line[index] == "(":
-            token, index = read_left_parensis(line, index)
-        elif line[index] == "a" and line[index : index + 3] == "abs":
-            token, index = read_abs(line, index)
-        elif line[index] == "i" and line[index : index + 3] == "int":
-            token, index = read_int(line, index)
-        elif line[index] == "r" and line[index : index + 5] == "round":
-            token, index = read_round(line, index)
-        else:
-            print("Invalid character found: " + line[index])
-            exit(1)
-        tokens.append(token)
-    return tokens
-
-
+# tokensを計算してnumを返す
 def evaluate(tokens):
     tokens = resolve_parenthes(tokens)
-    print(f"( and ) were resolved: {tokens}")
+    # print(f"( and ) were resolved: {tokens}")
     tokens = resolve_math_functions(tokens)
-    print(f"abs, int, round were resolved: {tokens}")
+    # print(f"abs, int, round were resolved: {tokens}")
     tokens = resolve_multi_div(tokens)
-    print(f"* and / were resolved: {tokens}")
+    # print(f"* and / were resolved: {tokens}")
     tokens = resolve_plus_minus(tokens)
-    print(f"+ and - were resolved: {tokens}")
+    # print(f"+ and - were resolved: {tokens}")
     return tokens[0]["number"]
 
 
@@ -226,6 +192,7 @@ def resolve_plus_minus(tokens):
     return tokens
 
 
+# eval関数と作成した電卓の関数の返り値が等しいか確認する
 def test(line):
     tokens = tokenize(line)
     actual_answer = evaluate(tokens)
