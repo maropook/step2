@@ -13,16 +13,6 @@ ROUND = "ROUND"
 L_PAREN = "L_PARE"
 R_PAREN = "R_PAREN"
 
-# documentの参考：https://docs.python.org/ja/3/library/functions.html#eval
-# 0で割ったらまずい問題、数膨大案件→pythonバカでかい数input not a number 例外を投げる
-# やってみないとわからない系のerror case, ぐちゃぐちゃ諦めは必要
-# 記号連続はだめ連続したらだめなものabsの後にかっこがない
-# ()とかに当てはまるやつ最初に簡易チェックする？残りの深いケース
-# helper function みたいなのをつかってそれを中で呼ぶのはいいかも どんなerrorを投げるか？stack traceも表示する
-# 10文字目でplusが連続してる　どこで、なんで起きてる?
-# Errorが正しく起きるかもテストする TestError作ってエラーのTry catch catchの文面が一緒か
-#
-
 operators = {
     "+": {"length": 1, "token": "+", "type": PLUS},
     "-": {"length": 1, "token": "-", "type": MINUS},
@@ -245,14 +235,6 @@ def run_test():
     test("round(3.3)")
     test("12+abs(int(round(1.55)+abs(int(2.3+4))))")
     test("abs(int(round(1.55)+abs(int(2.3+4))))")
-    # 見落としがちな値 0
-    # 空文字, 負の値どれぐらい
-    # 0をどこで使ったらまずいか,
-    # 優先順位が正しく処理されているか
-    # test_caseの名前も見えるようにするのもあり
-    # 基礎
-    # コーナーケース
-
     print("==== Test finished! ====\n")
 
 
@@ -264,6 +246,3 @@ run_test()
 #     tokens = tokenize(line)
 #     answer = evaluate(tokens)
 #     print("answer = %f\n" % answer)
-
-# いろんなアルゴリズム調べる 再帰降下型parser 式をどういう形で書きたいのか？
-#
