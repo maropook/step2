@@ -13,9 +13,8 @@ ROUND = "ROUND"
 L_PAREN = "L_PARE"
 R_PAREN = "R_PAREN"
 
+# documentの参考：https://docs.python.org/ja/3/library/functions.html#eval
 # 0で割ったらまずい問題、数膨大案件→pythonバカでかい数input not a number 例外を投げる
-# 関数の定義順はOK
-# tokenizeの順番 今回のケース
 # やってみないとわからない系のerror case, ぐちゃぐちゃ諦めは必要
 # 記号連続はだめ連続したらだめなものabsの後にかっこがない
 # ()とかに当てはまるやつ最初に簡易チェックする？残りの深いケース
@@ -74,7 +73,7 @@ def read_number(line, index):
 
 # 文字列の演算子を受け取りtokenと新たなindexを返す
 def read_operator(line, index):
-    op = operator[line[index]]
+    op = operators[line[index]]
     if line[index : index + op["length"]] == op["token"]:
         return {"type": op["type"]}, index + op["length"]
     else:
@@ -82,7 +81,7 @@ def read_operator(line, index):
         exit(1)
 
 
-# tokensを計算してnumを返す
+# tokensを計算して結果をnum型で返す
 def evaluate(tokens):
     tokens = resolve_parenthes(tokens)
     # print(f"( and ) were resolved: {tokens}")
@@ -95,7 +94,7 @@ def evaluate(tokens):
     return tokens[0]["number"]
 
 
-# かっこに囲われた部分を内側のかっこから計算し、かっこを含まないtokensを返す
+# かっこに囲われた部分を1番内側のかっこから計算し、かっこを含まないtokensを返す
 def resolve_parenthes(tokens):
     # 開かっこのindexをstackに入れ、閉じかっこが見つかったらペアのかっこを取得する
     left_parenthes = []

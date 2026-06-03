@@ -1,13 +1,13 @@
 ## 宿題 Week3
 *, /, (, ), abs, int, round対応をする電卓を作成する
 
-#### 型
+### 型
 token
 
 type: "NUMBER", "PLUS", "MINUS", "MULT", "DIV", "ABS", "INT", "ROUND", "LEFT_PARENSIS" or "RIGHT_PARENSIS"
 number: int or float(typeがNUMBERの時のみ存在)
 
-#### 関数
+### 関数
 read_number
 - 文字列と数字が始まるindexを受け取りintまたはfloatを返す
 - 対象の文字が数字である限りindexを増やし読み込んでいく
