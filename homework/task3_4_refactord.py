@@ -113,7 +113,7 @@ def resolve_parensis(tokens, left_parenthesis, right_parenthesis):
     tokens = resolve_plus_minus(tokens)
     return tokens
 
-
+1+3*4(3+4)
 # abs, int, roundを計算し、それらを含まないtokensを返す
 def resolve_math_functions(tokens):
     index = 1
