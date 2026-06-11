@@ -57,3 +57,10 @@ Coding Agent ではなく Gemini を使うこと
 
 発見した経路長とプログラムを Slack でつぶやいてください！
 だれが一番長い経路を発見できるかな？？
+
+===============
+途中です。
+課題1: https://github.com/maropook/step2/blob/master/homework/task4_1.py
+課題2: https://github.com/maropook/step2/blob/master/homework/task4_2.py
+課題3: https://github.com/maropook/step2/blob/master/homework/task4_3.py
+

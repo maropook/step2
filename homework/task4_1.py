@@ -1,5 +1,5 @@
 import sys
-from  collections import deque
+from collections import deque
 
 
 class Wikipedia:
@@ -69,16 +69,16 @@ class Wikipedia:
             if link_count[dst] == link_count_max:
                 print(self.titles[dst], link_count_max)
         print()
-    
+
     def find_largest_id(self):
         max_id = 0
-        for key in self.values():
+        for key in self.titles.keys():
             if max_id < key:
                 max_id = key
         self.max_id = max_id
 
     def find_id_by_title(self, title):
-        for key, value in self.items():
+        for key, value in self.titles.items():
             if value == title:
                 return key
         return ""
@@ -88,22 +88,29 @@ class Wikipedia:
     # 'goal': A title of the goal page.
     def find_shortest_path(self, start, goal):
         # ------------------------#
+        distance = -1
         start_id = self.find_id_by_title(start)
-        if not start_id:
-            return ""
-        
-        # index = ID
-        visited = [False] * (len(self.max_id) + 1)
-        stack = deque([start_id])
-        while stack:
-            node = stack.pop()
-            for neighbor in self.links[node]:
-                if not visited[neighbor]:
-                    stack.append(neighbor)
-                    visited[neighbor] = True
-        
+        goal_id = self.find_id_by_title(goal)
+        print(f"{start_id} shibuya")
 
-        def bfs():
+        # index = ID
+        visited = [False] * (self.max_id + 1)
+        queue = deque([start_id])
+        distance = 0
+        while queue:
+            distance += 1
+            current_id = queue.popleft()
+            print(f"{distance}: distance")
+            if current_id == goal_id:
+                print(f"distance between start and goal is {distance}")
+                return
+
+            for neighbor in self.links[current_id]:
+                if not visited[neighbor]:
+                    queue.append(neighbor)
+                    visited[neighbor] = True
+        print("start and goal is not connected")
+        return
 
         # goal_id =
         # タイトルからIDを見つける
@@ -159,9 +166,9 @@ if __name__ == "__main__":
 
     wikipedia = Wikipedia(sys.argv[1], sys.argv[2])
     # Example
-    wikipedia.find_longest_titles()
-    # Example
-    wikipedia.find_most_linked_pages()
+    # wikipedia.find_longest_titles()
+    # # Example
+    # wikipedia.find_most_linked_pages()
 
     wikipedia.find_largest_id()
 
