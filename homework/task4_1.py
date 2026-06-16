@@ -7,18 +7,9 @@ class Wikipedia:
     # Initialize the graph of pages.
     def __init__(self, pages_file, links_file):
 
-        # A mapping from a page ID (integer) to the page title.
-        # For example, self.titles[1234] returns the title of the page whose
-        # ID is 1234.
         self.titles = {}
-
-        # A set of page links.
-        # For example, self.links[1234] returns an array of page IDs linked
-        # from the page whose ID is 1234.
+        self.ids = {}
         self.links = {}
-
-        self.max_id = 0
-
         # Read the pages file into self.titles.
         with open(pages_file) as file:
             for line in file:
@@ -39,6 +30,9 @@ class Wikipedia:
                 self.links[src].append(dst)
         print("Finished reading %s" % links_file)
         print()
+
+        for key, value in self.titles.items():
+            self.ids[value] = key
 
     # Example: Find the longest titles.
     def find_longest_titles(self):
@@ -70,35 +64,20 @@ class Wikipedia:
                 print(self.titles[dst], link_count_max)
         print()
 
-    def find_largest_id(self):
-        max_id = 0
-        for key in self.titles.keys():
-            if max_id < key:
-                max_id = key
-        self.max_id = max_id
-
-    def find_id_by_title(self, title):
-        for key, value in self.titles.items():
-            if value == title:
-                return key
-        return ""
-
     # Homework #1: Find the shortest path.
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
     def find_shortest_path(self, start, goal):
-        # ------------------------#
         distance = -1
-        start_id = self.find_id_by_title(start)
-        goal_id = self.find_id_by_title(goal)
-        print(f"{start_id} shibuya")
-
+        start_id = self.ids[start]
+        goal_id = self.ids[goal]
         # index = ID
-        visited = [False] * (self.max_id + 1)
-        queue = deque([(start_id, [])])
+        visited = {}
+        for i in self.ids.values():
+            visited[i] = False
+        visited[start_id] = True
 
-        # bfsなら、階層の深さを記録しておく必要がある
-        # BFS に工夫を入れて最短経路を出せるようにする
+        queue = deque([(start_id, [])])
         distance = 0
         while queue:
             current_node_counts = len(queue)
@@ -107,7 +86,7 @@ class Wikipedia:
                 current_id, path = current[0], current[1]
                 if current_id == goal_id:
                     print(
-                        f"distance between start and goal is {distance}, path is {path}"
+                        f"The distance between {start} and {goal} is {distance}. Path is {path}"
                     )
                     return
 
@@ -118,24 +97,29 @@ class Wikipedia:
                         queue.append((neighbor, current_path))
                         visited[neighbor] = True
             distance += 1
-
         print("start and goal is not connected")
         return
 
-        # goal_id =
-        # タイトルからIDを見つける
-        # startのidをstartとしてqueueにいれてbfsをする
-        # idをgoal_idと比較してのIDを見つけた瞬間に self.titles[id]
-        # 見つからなかったら ""を返す
-        # Write your code here!  #
-        # ------------------------#
-        pass
-
     # Homework #2: Calculate the page ranks and print the most popular pages.
     def find_most_popular_pages(self):
-        # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
+        # 宿題2
+        # find_most_popular_pages() 関数を書いて、ページランクを計算して重要度の高いページトップ 10 を求めてください
+        # このスライドで「言葉で説明したアルゴリズムを自分で具体化してコードに落とす」のが宿題の意図です
+        # 50 行程度で書けます 😀
+        # ヒント
+        # 正しさの確認方法
+        # ページランクの分配と更新を何回繰り返しても「全部のノードのページランクの合計値」が一定に保たれることを確認してください
+        # 一定にならない場合何かが間違ってます！
+        # Large のデータセットで動かすためには O(N + E) のアルゴリズムが必要です
+        # ページ数：N = 2215900
+        # リンク数：E = 119006494
+        # ページランクの更新が「完全に」収束するのは時間がかかりすぎるので、更新が十分少なくなったら止める
+        # 収束条件の作り方の例：
+        # ∑(new_pagerank[i] - old_pagerank[i])^2 < 0.01
+        # pagelankの計算はindex0からlinkしているものたちにpagelank_conected =( 0.85 * connected) len(connectedd),  pagelank_all = (0.15 * current)/len(all)
+        # 最後の一周でallのやつを全てのindexに対して足していく
+        # for文で∑(new_pagerank[i] - old_pagerank[i])^2 < 0.01
+        # new_pagerankとold_pagerankをちょくちょく作っていく
         pass
 
     # Homework #3 (optional):
@@ -179,8 +163,6 @@ if __name__ == "__main__":
     # wikipedia.find_longest_titles()
     # # Example
     # wikipedia.find_most_linked_pages()
-
-    wikipedia.find_largest_id()
 
     # Homework #1
     wikipedia.find_shortest_path("渋谷", "小野妹子")

@@ -1,5 +1,5 @@
 import sys
-from  collections import deque
+from collections import deque
 
 
 class Wikipedia:
@@ -69,16 +69,16 @@ class Wikipedia:
             if link_count[dst] == link_count_max:
                 print(self.titles[dst], link_count_max)
         print()
-    
+
     def find_largest_id(self):
         max_id = 0
-        for key in self.values():
+        for key in self.titles.keys():
             if max_id < key:
                 max_id = key
         self.max_id = max_id
 
     def find_id_by_title(self, title):
-        for key, value in self.items():
+        for key, value in self.titles.items():
             if value == title:
                 return key
         return ""
@@ -87,32 +87,33 @@ class Wikipedia:
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
     def find_shortest_path(self, start, goal):
-        # ------------------------#
+        distance = -1
         start_id = self.find_id_by_title(start)
-        if not start_id:
-            return ""
-        
+        goal_id = self.find_id_by_title(goal)
         # index = ID
-        visited = [False] * (len(self.max_id) + 1)
-        stack = deque([start_id])
-        while stack:
-            node = stack.pop()
-            for neighbor in self.links[node]:
-                if not visited[neighbor]:
-                    stack.append(neighbor)
-                    visited[neighbor] = True
-        
+        visited = [False] * (self.max_id + 1)
+        queue = deque([(start_id, [])])
+        distance = 0
+        while queue:
+            current_node_counts = len(queue)
+            for _ in range(current_node_counts):
+                current = queue.popleft()
+                current_id, path = current[0], current[1]
+                if current_id == goal_id:
+                    print(
+                        f"distance between start and goal is {distance}, path is {path}"
+                    )
+                    return
 
-        def bfs():
-
-        # goal_id =
-        # タイトルからIDを見つける
-        # startのidをstartとしてqueueにいれてbfsをする
-        # idをgoal_idと比較してのIDを見つけた瞬間に self.titles[id]
-        # 見つからなかったら ""を返す
-        # Write your code here!  #
-        # ------------------------#
-        pass
+                for neighbor in self.links[current_id]:
+                    current_path = path[:]
+                    current_path.append(current_id)
+                    if not visited[neighbor]:
+                        queue.append((neighbor, current_path))
+                        visited[neighbor] = True
+            distance += 1
+        print("start and goal is not connected")
+        return
 
     # Homework #2: Calculate the page ranks and print the most popular pages.
     def find_most_popular_pages(self):
@@ -159,14 +160,14 @@ if __name__ == "__main__":
 
     wikipedia = Wikipedia(sys.argv[1], sys.argv[2])
     # Example
-    wikipedia.find_longest_titles()
-    # Example
-    wikipedia.find_most_linked_pages()
+    # wikipedia.find_longest_titles()
+    # # Example
+    # wikipedia.find_most_linked_pages()
 
     wikipedia.find_largest_id()
 
     # Homework #1
-    wikipedia.find_shortest_path("渋谷", "パレートの法則")
+    wikipedia.find_shortest_path("渋谷", "小野妹子")
     # Homework #2
     wikipedia.find_most_popular_pages()
     # Homework #3 (optional)
