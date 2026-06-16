@@ -95,20 +95,30 @@ class Wikipedia:
 
         # index = ID
         visited = [False] * (self.max_id + 1)
-        queue = deque([start_id])
+        queue = deque([(start_id, [])])
+
+        # bfsなら、階層の深さを記録しておく必要がある
+        # BFS に工夫を入れて最短経路を出せるようにする
         distance = 0
         while queue:
-            distance += 1
-            current_id = queue.popleft()
-            print(f"{distance}: distance")
-            if current_id == goal_id:
-                print(f"distance between start and goal is {distance}")
-                return
+            current_node_counts = len(queue)
+            for _ in range(current_node_counts):
+                current = queue.popleft()
+                current_id, path = current[0], current[1]
+                if current_id == goal_id:
+                    print(
+                        f"distance between start and goal is {distance}, path is {path}"
+                    )
+                    return
 
-            for neighbor in self.links[current_id]:
-                if not visited[neighbor]:
-                    queue.append(neighbor)
-                    visited[neighbor] = True
+                for neighbor in self.links[current_id]:
+                    current_path = path[:]
+                    current_path.append(current_id)
+                    if not visited[neighbor]:
+                        queue.append((neighbor, current_path))
+                        visited[neighbor] = True
+            distance += 1
+
         print("start and goal is not connected")
         return
 
@@ -173,7 +183,7 @@ if __name__ == "__main__":
     wikipedia.find_largest_id()
 
     # Homework #1
-    wikipedia.find_shortest_path("渋谷", "パレートの法則")
+    wikipedia.find_shortest_path("渋谷", "小野妹子")
     # Homework #2
     wikipedia.find_most_popular_pages()
     # Homework #3 (optional)
