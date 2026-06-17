@@ -11,8 +11,10 @@ collections.deque を使うとスタックやキューが作れます
 
 python3 homework/task4_1.py wikipedia_dataset/pages_small.txt
  wikipedia_dataset/links_small.txt
+
 python3 homework/task4_1.py wikipedia_dataset/pages_medium.txt
  wikipedia_dataset/links_medium.txt
+ 
  python3 homework/task4_1.py wikipedia_dataset/pages_large.txt
  wikipedia_dataset/links_large.txt
 
