@@ -139,7 +139,7 @@ class Wikipedia:
         if start == goal:
             print(f"IDで表したPath：{[start_id]}")
             print(f"タイトルで表したPath：{[start]}")
-            print(f"ステップ数：0")
+            print("ステップ数：0")
             return
 
         # 探索中のページのidを管理するキュー

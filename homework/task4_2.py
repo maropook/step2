@@ -76,9 +76,9 @@ class Wikipedia:
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
     def find_shortest_path(self, start, goal):
-        distance = -1
         start_id = self.ids[start]
         goal_id = self.ids[goal]
+        queue = deque([start_id])
         visited = {}
         prev_nodes = {}
 
@@ -86,25 +86,22 @@ class Wikipedia:
             visited[i] = False
         visited[start_id] = True
 
-        queue = deque([start_id])
-        distance = 0
         while queue:
             current_node_counts = len(queue)
             for _ in range(current_node_counts):
                 current_id = queue.popleft()
                 if current_id == goal_id:
                     path = self.get_path_from_goal(goal_id, prev_nodes)
+                    distance = len(path) - 1
                     print(
                         f"The distance between {start} and {goal} is {distance}. Path is {path}"
                     )
                     return
-
                 for neighbor_id in self.links[current_id]:
                     if not visited[neighbor_id]:
                         prev_nodes[neighbor_id] = current_id
                         queue.append(neighbor_id)
                         visited[neighbor_id] = True
-            distance += 1
         print("Start and goal is not connected")
         return
 

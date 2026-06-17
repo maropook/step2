@@ -24,7 +24,7 @@ class Wikipedia:
             for line in file:
                 id, title = line.rstrip().split(" ")
                 id = int(id)
-                assert not id in self.titles, id
+                assert id not in self.titles, id
                 self.titles[id] = title
                 self.links[id] = []
         print("Finished reading %s" % pages_file)

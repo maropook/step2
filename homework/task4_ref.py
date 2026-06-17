@@ -22,7 +22,7 @@ class Wikipedia:
             for line in file:
                 id, title = line.rstrip().split(" ")
                 id = int(id)
-                assert not id in self.titles, id
+                assert id not in self.titles, id
                 self.titles[id] = title
                 self.links[id] = []
         print("Finished reading %s" % pages_file)
@@ -108,7 +108,7 @@ class Wikipedia:
                 print(path_title)
                 return
             for child in self.links[node]:
-                if not child in visited:
+                if child not in visited:
                     visited[child] = node
                     queue.append(child)  # childをキューの末尾に追加
         pass
