@@ -1,4 +1,5 @@
 import sys
+import random
 from collections import deque
 
 
@@ -64,13 +65,14 @@ class Wikipedia:
                 print(self.titles[dst], link_count_max)
         print()
 
-    def get_path_from_goal(self, goal_id, prev_nodes):
-        path = [(goal_id, self.titles[goal_id])]
+    def get_path(self, goal_id, prev_nodes):
+        path = [goal_id]
         current_id = goal_id
         while current_id in prev_nodes:
             current_id = prev_nodes[current_id]
-            path.append((current_id, self.titles[current_id]))
-        return path
+            path.append(current_id)
+        reversed_path = list(reversed(path))
+        return reversed_path
 
     # Homework #1: Find the shortest path.
     # 'start': A title of the start page.
@@ -91,7 +93,8 @@ class Wikipedia:
             for _ in range(current_node_counts):
                 current_id = queue.popleft()
                 if current_id == goal_id:
-                    path = self.get_path_from_goal(goal_id, prev_nodes)
+                    path = self.get_path(goal_id, prev_nodes)
+                    self.assert_path(path, start, goal)
                     distance = len(path) - 1
                     print(
                         f"The distance between {start} and {goal} is {distance}. Path is {path}"
@@ -179,10 +182,32 @@ class Wikipedia:
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
     def find_longest_path(self, start, goal):
-        # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
-        pass
+        start_id = self.ids[start]
+        goal_id = self.ids[goal]
+        visited_nodes = {}
+        prev_nodes = {}
+
+        for i in self.ids.values():
+            visited_nodes[i] = False
+
+        stack = deque([start_id])
+        while stack:
+            current_id = stack.pop()
+            if current_id == goal_id:
+                path = self.get_path(goal_id, prev_nodes)
+                self.assert_path(path, start, goal)
+                distance = len(path) - 1
+                print(f"The distance between {start} and {goal} is {distance}")
+                return distance
+            visited_nodes[current_id] = True
+            neighbors = self.links[current_id].copy()
+            random.shuffle(neighbors)
+            for neighbor_id in neighbors:
+                if not visited_nodes[neighbor_id]:
+                    stack.append(neighbor_id)
+                    prev_nodes[neighbor_id] = current_id
+        print("not found")
+        return -1
 
     # Helper function for Homework #3:
     # Please use this function to check if the found path is well formed.
@@ -215,10 +240,13 @@ if __name__ == "__main__":
     # wikipedia.find_longest_titles()
     # # Example
     # wikipedia.find_most_linked_pages()
-
     # Homework #1
     wikipedia.find_shortest_path("渋谷", "小野妹子")
     # Homework #2
     # wikipedia.find_most_popular_pages()
     # Homework #3 (optional)
-    # wikipedia.find_longest_path("渋谷", "池袋")
+    longest_path = []
+    for _ in range(100):
+        longest_path.append(wikipedia.find_longest_path("渋谷", "池袋"))
+    sorted_longest_path = sorted(longest_path, reverse=True)
+    print(sorted_longest_path[:10])
